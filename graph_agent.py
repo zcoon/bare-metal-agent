@@ -88,14 +88,21 @@ graph.add_conditional_edges("call_model", should_continue)  # the branch
 graph.add_edge("run_tools", "call_model")    # loop tools back to the model
 
 app = graph.compile()
-print(app.get_graph().draw_ascii())
+
 
 #now run it
-result = app.invoke(
-    {"messages": [{"role": "user", "content": "Should I bring an umbrella in Austin, and what about Denver?"}]},
-    config={"recursion_limit":10}
-)
 
-# the final answer is the last message's text
-final = result["messages"][-1].content
-print("\nFINAL:", final)
+def run_agent(question: str) -> str:
+    result = app.invoke(
+        {"messages": [{"role": "user", "content": question}]},
+        config={"recursion_limit":10}
+    )
+    # the final answer is the last message's text
+    final = result["messages"][-1].content
+    return final
+
+
+
+if __name__ == "__main__":
+    print(run_agent("Should I bring an umbrella in Austin, and what about Denver?"))
+    print(app.get_graph().draw_ascii())
